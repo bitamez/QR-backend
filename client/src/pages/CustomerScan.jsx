@@ -15,8 +15,6 @@ export function CustomerScan() {
   // Form states
   const [comments, setComments] = useState('');
   const [contactInfo, setContactInfo] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
 
   useEffect(() => {
     // Generate device hash if missing
@@ -57,7 +55,7 @@ export function CustomerScan() {
     const deviceHash = localStorage.getItem('device_hash');
 
     // Post directly to the PostgreSQL database!
-    api.post(`/feedback/submit/${targetUrl}`, { rating, comments, contactInfo, name, phone, deviceHash })
+    api.post(`/feedback/submit/${targetUrl}`, { rating, comments, contactInfo, deviceHash })
       .then((res) => {
         setSubmitted(true);
       })

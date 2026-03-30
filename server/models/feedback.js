@@ -63,7 +63,7 @@ class Feedback {
 
     const { data, error } = await supabase
       .from('feedbacks')
-      .select('created_at, user_name, rating, comments')
+      .select('created_at, rating, comments')
       .in('qr_code_id', qrIds)
       .order('created_at', { ascending: false })
       .limit(5);
@@ -72,23 +72,21 @@ class Feedback {
     
     return data.map(f => ({
       date: new Date(f.created_at).toLocaleDateString(),
-      customer: f.user_name || 'Anonymous',
+      customer: 'Anonymous',
       rating: f.rating,
       comment: f.comments
     }));
   }
 
   static async create(data) {
-    const { qr_id, rating, comments, user_name, user_email, user_phone, device_hash } = data;
+    const { qr_id, rating, comments, user_email, device_hash } = data;
     const { data: feedback, error } = await supabase
       .from('feedbacks')
       .insert([{ 
         qr_code_id: qr_id, 
         rating, 
         comments, 
-        user_name,
         user_email,
-        user_phone,
         device_hash 
       }])
       .select()
