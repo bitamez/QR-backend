@@ -1,18 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const db = require('./config/db.js');
 
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const feedbackRoutes = require('./routes/feedbackRoutes'); // Switched to new MVC
+const feedbackRoutes = require('./routes/feedbackRoutes');
 const organizationRoutes = require('./routes/organizationRoutes');
 const branchRoutes = require('./routes/branchRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const qrCodeRoutes = require('./routes/qrCodeRoutes');
+const userRoutes = require('./routes/userRoutes');
+const roleRoutes = require('./routes/roleRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
-const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -23,22 +25,18 @@ app.use(express.json());
 const clientDistPath = path.join(__dirname, '../client/dist');
 app.use(express.static(clientDistPath));
 
-// Main App Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/organizations', organizationRoutes);
 app.use('/api/branches', branchRoutes);
 app.use('/api/services', serviceRoutes);
-const userRoutes = require('./routes/userRoutes');
-const roleRoutes = require('./routes/roleRoutes');
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/qrcodes', qrCodeRoutes);
 
-app.use(errorHandler);
-
-// Basic health check route
+// Health check
 app.get('/api/health', async (req, res) => {
   try {
     const { data, error } = await db.from('organizations').select('count', { count: 'exact', head: true });
@@ -50,11 +48,18 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Serve the React frontend for all other requests
-app.get(/.*/, (req, res) => {
+app.get('/:any*', (req, res) => {
+ if (req.url.startsWith('/api')) return; // Pass API through
+ res.sendFile(path.join(clientDistPath, 'index.html'));
+});
+
+app.get('/', (req, res) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
-// Start the server
+app.use(errorHandler);
+
+// Start the server (safe for both Vercel and Render)
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
