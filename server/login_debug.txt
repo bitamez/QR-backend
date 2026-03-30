@@ -1,0 +1,20 @@
+{
+  "admins": [
+    {
+      "admin_id": 2,
+      "username": "super_admin",
+      "email": "bitaaaa2004@gmail.com",
+      "role": "super_admin",
+      "password_hash": "$2b$10$KcwVP6rde.UpQdkO6UPcMeoGyu/4IitioKFpi.yth/4lkRSeFobde"
+    }
+  ],
+  "users": [
+    {
+      "user_id": 3,
+      "name": "Abebe Tesfaye",
+      "email": "branchmanager@gmail.com",
+      "role_id": 2,
+      "password_hash": "$2b$10$KcwVP6rde.UpQdkO6UPcMeoGyu/4IitioKFpi.yth/4lkRSeFobde"
+    }
+  ]
+}

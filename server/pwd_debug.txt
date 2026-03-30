@@ -1,0 +1,7 @@
+{
+  "123456": false,
+  "password": true,
+  "admin": false,
+  "super_admin": false,
+  "Password123": false
+}
