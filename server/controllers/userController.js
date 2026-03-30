@@ -4,21 +4,26 @@ const supabase = require('../config/db');
 
 const getUsers = async (req, res, next) => {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('user_id, name, email, phone, organizations:organization_id(name), roles:role_id(role_name)');
-    
-    if (error) throw new Error(error.message);
+    // Basic fetch of users
+    const { data: usersData, error } = await supabase.from('users').select('*');
+    if (error) throw new Error(usersError.message);
 
-    // Flattening for compatibility
-    const flattened = data.map(u => ({
-      user_id: u.user_id,
-      full_name: u.name,
-      email: u.email,
-      phone: u.phone,
-      org_name: u.organizations?.name,
-      role_name: u.roles?.role_name
-    }));
+    // Fetch roles and orgs separately to avoid relationship issue
+    const { data: rolesData } = await supabase.from('roles').select('*');
+    const { data: orgsData } = await supabase.from('organizations').select('*');
+
+    const flattened = usersData.map(u => {
+      const role = rolesData?.find(r => r.role_id === u.role_id);
+      const org = orgsData?.find(o => o.organization_id === u.organization_id);
+      return {
+        user_id: u.user_id,
+        full_name: u.name,
+        email: u.email,
+        phone: u.phone,
+        org_name: org?.name || 'N/A',
+        role_name: role?.role_name || 'user'
+      };
+    });
 
     res.json(flattened);
   } catch (err) {
