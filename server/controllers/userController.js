@@ -33,8 +33,8 @@ const getUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   try {
-    const { organization_id, full_name, email, phone, role } = req.body;
-    const defaultPassword = await bcrypt.hash('password123', 10);
+    const { organization_id, full_name, email, phone, role, password } = req.body;
+    const defaultPassword = await bcrypt.hash(password || 'password123', 10);
     
     // In search of role_id
     const { data: roleData } = await supabase.from('roles').select('role_id').eq('role_name', role || 'coordinator').single();

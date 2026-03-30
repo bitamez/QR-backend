@@ -13,6 +13,7 @@ export function UsersList() {
     full_name: '',
     email: '',
     phone: '',
+    password: '',
     role: 'manager'
   });
 
@@ -49,6 +50,7 @@ export function UsersList() {
         full_name: '',
         email: '',
         phone: '',
+        password: '',
         role: 'manager'
       });
       fetchData();
@@ -80,13 +82,14 @@ export function UsersList() {
             <input required placeholder="Full Name" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} />
             <input required type="email" placeholder="Email Address" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
             <input required placeholder="Phone Number" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+            <input required type="password" placeholder="User Password" title="For new account access" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
             <select className="bg-slate-950 border border-slate-800 p-2 rounded text-white capitalize" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
               {roles.map(r => (
                 <option key={r.role_id} value={r.role_name}>{r.role_name.replace('_', ' ')}</option>
               ))}
             </select>
-            <button type="submit" className="bg-blue-600 p-2 rounded text-white font-semibold">Invite User</button>
-            <p className="text-xs text-slate-500 mt-1">Users are created with default password: password123</p>
+            <button type="submit" className="bg-blue-600 p-2 rounded text-white font-semibold">Invite User Account</button>
+            <p className="text-xs text-slate-500 mt-1">Leave password blank for default: password123</p>
           </form>
         </Card>
       )}
