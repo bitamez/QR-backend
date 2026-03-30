@@ -6,6 +6,7 @@ import api from '../api';
 export function UsersList() {
   const [users, setUsers] = useState([]);
   const [orgs, setOrgs] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     organization_id: '',
@@ -21,12 +22,14 @@ export function UsersList() {
 
   const fetchData = async () => {
     try {
-      const [resUsers, resOrgs] = await Promise.all([
+      const [resUsers, resOrgs, resRoles] = await Promise.all([
         api.get('/users'),
-        api.get('/organizations')
+        api.get('/organizations'),
+        api.get('/roles')
       ]);
       setUsers(resUsers.data);
       setOrgs(resOrgs.data);
+      setRoles(resRoles.data);
     } catch (err) {
       console.error(err);
     }
@@ -77,9 +80,10 @@ export function UsersList() {
             <input required placeholder="Full Name" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} />
             <input required type="email" placeholder="Email Address" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
             <input required placeholder="Phone Number" className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-            <select className="bg-slate-950 border border-slate-800 p-2 rounded text-white" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
-              <option value="manager">Branch Manager</option>
-              <option value="coordinator">Branch Coordinator</option>
+            <select className="bg-slate-950 border border-slate-800 p-2 rounded text-white capitalize" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+              {roles.map(r => (
+                <option key={r.role_id} value={r.role_name}>{r.role_name.replace('_', ' ')}</option>
+              ))}
             </select>
             <button type="submit" className="bg-blue-600 p-2 rounded text-white font-semibold">Invite User</button>
             <p className="text-xs text-slate-500 mt-1">Users are created with default password: password123</p>
