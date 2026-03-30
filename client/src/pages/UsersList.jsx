@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '../components/Card';
 import { Users, Search, Plus, ShieldAlert } from 'lucide-react';
-import api from '../api';
+import api from '../api'; // Build trigger: ensure latest UI features
 
 export function UsersList() {
   const [users, setUsers] = useState([]);
