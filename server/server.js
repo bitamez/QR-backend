@@ -12,11 +12,16 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const qrCodeRoutes = require('./routes/qrCodeRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the React frontend app
+const clientDistPath = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDistPath));
 
 // Main App Routes
 app.use('/api/auth', authRoutes);
@@ -36,13 +41,17 @@ app.use(errorHandler);
 // Basic health check route
 app.get('/api/health', async (req, res) => {
   try {
-    // Basic ping to check connection
     const { data, error } = await db.from('organizations').select('count', { count: 'exact', head: true });
     if (error) throw error;
     res.json({ status: 'ok', db: 'supabase_connected', timestamp: new Date() });
   } catch (err) {
     res.json({ status: 'error', db: 'disconnected', error: err.message });
   }
+});
+
+// All other GET requests not handled will return the React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 // Start the server
