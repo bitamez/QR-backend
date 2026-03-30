@@ -94,14 +94,16 @@ class Feedback {
     return feedback;
   }
 
-  static async getDetailedReports() {
-    const { data, error } = await supabase
+  static async getDetailedReports(branchId) {
+    let query = supabase
       .from('feedbacks')
       .select(`
         created_at,
         rating,
         comment,
-        qr_codes:qr_code_id (
+        qr_codes!inner (
+          qr_code_id,
+          branch_id,
           branches:branch_id (
             name
           ),
@@ -109,7 +111,13 @@ class Feedback {
             name
           )
         )
-      `)
+      `);
+    
+    if (branchId) {
+      query = query.eq('qr_codes.branch_id', branchId);
+    }
+    
+    const { data, error } = await query
       .order('created_at', { ascending: false })
       .limit(20);
     
@@ -124,8 +132,12 @@ class Feedback {
     }));
   }
 
-  static async getRatingDistribution() {
-    const { data, error } = await supabase.from('feedbacks').select('rating');
+  static async getRatingDistribution(branchId) {
+    let query = supabase.from('feedbacks').select('rating, qr_codes!inner(branch_id)');
+    if (branchId) {
+      query = query.eq('qr_codes.branch_id', branchId);
+    }
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
 
     const counts = {};

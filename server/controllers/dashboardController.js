@@ -25,6 +25,10 @@ const getManagerDashboard = async (req, res, next) => {
   try {
     const { branchId } = req.params;
     
+    if (req.user.role !== 'super_admin' && req.user.branchId?.toString() !== branchId?.toString()) {
+      return res.status(403).json({ error: 'Access denied: You can only access your own branch dashboard.' });
+    }
+    
     const stats = await Feedback.getBranchStats(branchId);
     const recentFeedback = await Feedback.getBranchRecent(branchId);
 

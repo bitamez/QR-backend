@@ -73,8 +73,9 @@ const submitFeedbackLegacy = async (req, res, next) => {
 
 const getReports = async (req, res, next) => {
   try {
-    const detailedReport = await Feedback.getDetailedReports();
-    const pie = await Feedback.getRatingDistribution();
+    const branchId = (req.user && req.user.role !== 'super_admin') ? req.user.branchId : null;
+    const detailedReport = await Feedback.getDetailedReports(branchId);
+    const pie = await Feedback.getRatingDistribution(branchId);
     res.json({
       detailedReport,
       ratingDistribution: pie.map(r => ({ name: r.name + ' Stars', value: parseInt(r.value) }))

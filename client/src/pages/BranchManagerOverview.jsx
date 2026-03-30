@@ -12,23 +12,31 @@ const defaultStats = {
 };
 
 export function BranchManagerOverview() {
-  const [stats, setStats] = useState(defaultStats);
-  const navigate = useNavigate();
+  const [stats, setStats] = useState({ totalFeedback: 0, averageRating: 0, recentFeedback: [] });
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const branchId = user.branchId;
+
+  useEffect(() => {
+    if (branchId) {
+      api.get(`/dashboard/manager/${branchId}`)
+        .then(res => setStats(res.data))
+        .catch(err => console.error(err));
+    }
+  }, [branchId]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-slate-200">
       <div className="flex items-center justify-between mb-2">
-         <h2 className="text-xl font-bold text-slate-200 tracking-tight">Branch Manager Dashboard</h2>
+         <h2 className="text-xl font-bold tracking-tight">Your Branch Performance</h2>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="bg-slate-900 border-slate-800 relative pt-1">
           <CardContent className="p-4 relative z-10 flex flex-col justify-between h-28">
-            <p className="text-slate-400 font-medium text-xs">Total Feedback</p>
+            <p className="text-slate-400 font-medium text-xs">Total Feedback Received</p>
             <div className="flex items-start">
-               <h3 className="text-4xl font-bold text-white">150</h3>
+               <h3 className="text-4xl font-bold text-white">{stats.totalFeedback}</h3>
             </div>
-            {/* Background Red visualizer */}
             <div className="absolute right-4 bottom-4 flex items-end gap-1 opacity-20">
               <div className="w-3 h-4 bg-red-500 rounded-sm"></div>
               <div className="w-3 h-8 bg-red-500 rounded-sm"></div>
@@ -38,10 +46,10 @@ export function BranchManagerOverview() {
         
         <Card className="bg-slate-900 border-slate-800 relative pt-1">
           <CardContent className="p-4 relative z-10 flex flex-col justify-between h-28">
-            <p className="text-slate-400 font-medium text-xs">Average Rating</p>
-            <div className="flex items-center gap-1">
+            <p className="text-slate-400 font-medium text-xs">Average Experience Rating</p>
+            <div className="flex items-center gap-2">
                <span className="text-yellow-500 font-bold text-2xl">★</span>
-               <h3 className="text-4xl font-bold text-orange-400">4.7</h3>
+               <h3 className="text-4xl font-bold text-orange-400">{stats.averageRating}</h3>
             </div>
             <div className="absolute right-4 bottom-4 flex items-end gap-1 opacity-20">
               <div className="w-3 h-6 bg-orange-400 rounded-sm"></div>
@@ -50,49 +58,48 @@ export function BranchManagerOverview() {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900 border-slate-800 relative pt-1">
+        <Card className="bg-slate-900 border-slate-800 relative pt-1 md:col-span-full lg:col-span-1">
           <CardContent className="p-4 relative z-10 flex flex-col justify-between h-28">
-            <p className="text-slate-400 font-medium text-xs">Average Rating</p>
+            <p className="text-slate-400 font-medium text-xs">Top Performer Service</p>
             <h3 className="text-4xl font-bold text-cyan-400">4.3</h3>
-            <div className="absolute right-4 bottom-4 flex items-end gap-1 opacity-20">
-              <div className="w-3 h-8 bg-cyan-400 rounded-sm"></div>
-              <div className="w-3 h-6 bg-cyan-400 rounded-sm"></div>
-            </div>
+            <p className="text-[10px] text-slate-500 mt-1 uppercase font-bold tracking-widest">Main Service Score</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader title="Recent Feedback" className="border-b border-slate-800" />
-        <CardContent className="p-0 overflow-x-auto text-slate-300">
+      <Card className="bg-slate-900 border-slate-800 shadow-xl">
+        <CardHeader title="Latest Customer Feedback" className="border-b border-slate-800 p-6" />
+        <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-left text-xs whitespace-nowrap">
-            <thead className="border-b border-slate-800 text-slate-400 font-bold">
+            <thead className="bg-[#1e293b]/50 text-slate-400 font-bold uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4">Branch</th>
-                <th className="px-6 py-4 text-center">Total Feedback</th>
-                <th className="px-6 py-4 text-center">Avg Rating</th>
-                <th className="px-6 py-4">Last Update</th>
-                <th className="px-6 py-4"></th>
+                <th className="px-6 py-4">Customer Info</th>
+                <th className="px-6 py-4 text-center">Satisfaction</th>
+                <th className="px-6 py-4">Received On</th>
+                <th className="px-6 py-4">Comments</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
-              {stats.recentBranches.map((row, i) => (
-                <tr key={i} className="hover:bg-slate-800 transition-colors cursor-pointer" onClick={() => navigate('/manager/branch')}>
-                  <td className="px-6 py-4 font-semibold text-slate-200">{row.name}</td>
-                  <td className="px-6 py-4 text-slate-300 text-center">{row.feedbackCount}</td>
+              {stats.recentFeedback.length > 0 ? stats.recentFeedback.map((row, i) => (
+                <tr key={i} className="hover:bg-slate-800/80 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-slate-200">{row.customer || 'Guest User'}</td>
                   <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center gap-1 text-yellow-500">
-                      {Array.from({length: 5}).map((_, j) => (
-                         <span key={j} className={j < Math.round(row.avgRating) ? 'text-yellow-500' : 'text-slate-700'}>★</span>
-                      ))}
+                    <div className="flex items-center justify-center gap-1">
+                       {Array.from({length: 5}).map((_, j) => (
+                          <span key={j} className={j < Math.round(row.rating) ? 'text-yellow-500' : 'text-slate-700'}>★</span>
+                       ))}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-400 text-[11px]">{row.lastUpdate}</td>
-                  <td className="px-6 py-4 text-right text-slate-500">
-                     &gt;
-                  </td>
+                  <td className="px-6 py-4 text-slate-400 text-[11px]">{row.date}</td>
+                  <td className="px-6 py-4 text-slate-300 italic truncate max-w-sm">"{row.comment || 'No comment provided'}"</td>
                 </tr>
-              ))}
+              )) : (
+                <tr>
+                   <td colSpan="4" className="px-6 py-12 text-center text-slate-600 font-medium uppercase tracking-widest">
+                     No feedback recorded for this branch yet
+                   </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </CardContent>
@@ -100,3 +107,4 @@ export function BranchManagerOverview() {
     </div>
   );
 }
+
