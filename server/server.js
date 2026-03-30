@@ -49,8 +49,8 @@ app.get('/api/health', async (req, res) => {
 
 // Serve the React frontend for all other requests
 app.get('/:any*', (req, res) => {
- if (req.url.startsWith('/api')) return; // Pass API through
- res.sendFile(path.join(clientDistPath, 'index.html'));
+  if (req.url.startsWith('/api')) return; // Pass API through
+  res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 app.get('/', (req, res) => {
