@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Building2, MapPin, Users, FileText, MessageSquare, QrCode, LogOut } from 'lucide-react';
+import { LayoutDashboard, Building2, MapPin, Users, FileText, MessageSquare, QrCode, LogOut, Shield } from 'lucide-react';
 
 export function Sidebar({ role, onNavigate }) {
   const location = useLocation();
@@ -14,6 +14,7 @@ export function Sidebar({ role, onNavigate }) {
           { name: 'Organizations', icon: Building2, path: '/admin/orgs' },
           { name: 'Branches', icon: MapPin, path: '/admin/branches' },
           { name: 'Users', icon: Users, path: '/admin/users' },
+          { name: 'Roles', icon: Shield, path: '/admin/roles' },
           { name: 'Reports', icon: FileText, path: '/analytics' },
         ];
       case 'manager':

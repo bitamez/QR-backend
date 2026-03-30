@@ -26,7 +26,9 @@ app.use('/api/organizations', organizationRoutes);
 app.use('/api/branches', branchRoutes);
 app.use('/api/services', serviceRoutes);
 const userRoutes = require('./routes/userRoutes');
+const roleRoutes = require('./routes/roleRoutes');
 app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
 app.use('/api/qrcodes', qrCodeRoutes);
 
 app.use(errorHandler);
@@ -44,6 +46,10 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

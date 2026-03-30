@@ -1,10 +1,10 @@
 const express = require('express');
 const { getUsers, createUser, getProfile, updateProfile } = require('../controllers/userController');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, checkRole } = require('../middleware/auth');
 const router = express.Router();
 
-router.get('/', getUsers);
-router.post('/', createUser);
+router.get('/', verifyToken, checkRole(['super_admin']), getUsers);
+router.post('/', verifyToken, checkRole(['super_admin']), createUser);
 router.get('/profile', verifyToken, getProfile);
 router.post('/profile', verifyToken, updateProfile);
 

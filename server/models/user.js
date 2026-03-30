@@ -12,23 +12,17 @@ class User {
   }
 
   static async findUserByEmailOrName(identifier) {
-    // Case-insensitive search for users/managers
-    let { data } = await supabase.from('users').select('*').ilike('email', identifier).single();
+    // Search with role join
+    const { data, error } = await supabase
+      .from('users')
+      .select('*, roles:role_id(role_name)')
+      .or(`email.ilike.${identifier},name.ilike.${identifier}`)
+      .single();
     
-    if (!data) {
-      // Try name case-insensitively
-      const res = await supabase.from('users').select('*').ilike('name', identifier).single();
-      data = res.data;
-    }
+    if (error || !data) return null;
 
-    if (!data) return null;
-
-    // Manual role lookup
-    if (data.role_id) {
-       const { data: roleData } = await supabase.from('roles').select('role_name').eq('role_id', data.role_id).single();
-       data.role_name = roleData ? roleData.role_name : 'user';
-    }
-
+    // Flatten role_name for easier use
+    data.role_name = data.roles?.role_name || 'user';
     return data;
   }
 }

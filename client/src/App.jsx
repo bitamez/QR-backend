@@ -11,6 +11,7 @@ import { Placeholder } from './components/Placeholder';
 import { Organizations } from './pages/Organizations';
 import { Branches } from './pages/Branches';
 import { UsersList } from './pages/UsersList';
+import { RolesList } from './pages/RolesList';
 import { SettingsProfile } from './pages/SettingsProfile';
 import { CustomerScan } from './pages/CustomerScan';
 import { ForgotPassword } from './pages/ForgotPassword';
@@ -53,6 +54,7 @@ function App() {
             <Route path="/admin/orgs" element={<Organizations />} />
             <Route path="/admin/branches" element={<Branches />} />
             <Route path="/admin/users" element={<UsersList />} />
+            <Route path="/admin/roles" element={<RolesList />} />
             <Route path="/admin/settings" element={<SettingsProfile />} />
             <Route path="/analytics" element={<Reports />} />
           </Route>
