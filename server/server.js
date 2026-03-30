@@ -49,8 +49,8 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// All other GET requests not handled will return the React app
-app.get('*', (req, res) => {
+// Serve the React frontend for all other requests
+app.get('(.*)', (req, res) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
