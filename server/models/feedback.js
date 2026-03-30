@@ -103,7 +103,7 @@ class Feedback {
         comment,
         qr_codes!inner (
           qr_code_id,
-          branch_id,
+          organization_id,
           branches:branch_id (
             name
           ),
@@ -114,7 +114,7 @@ class Feedback {
       `);
     
     if (branchId) {
-      query = query.eq('qr_codes.branch_id', branchId);
+      query = query.eq('qr_codes.organization_id', branchId);
     }
     
     const { data, error } = await query
@@ -133,9 +133,9 @@ class Feedback {
   }
 
   static async getRatingDistribution(branchId) {
-    let query = supabase.from('feedbacks').select('rating, qr_codes!inner(branch_id)');
+    let query = supabase.from('feedbacks').select('rating, qr_codes!inner(organization_id)');
     if (branchId) {
-      query = query.eq('qr_codes.branch_id', branchId);
+      query = query.eq('qr_codes.organization_id', branchId);
     }
     const { data, error } = await query;
     if (error) throw new Error(error.message);

@@ -24,16 +24,14 @@ const defaultList = [
 
 export function Reports() {
   const [data, setData] = useState({
-    detailedReport: defaultList,
-    ratingDistribution: defaultPieData
+    detailedReport: [],
+    ratingDistribution: []
   });
 
   useEffect(() => {
     api.get('/feedback/reports')
-      .then(res => {
-        if(res.data.detailedReport.length > 0) setData(res.data);
-      })
-      .catch(err => console.log('Using mock report data'));
+      .then(res => setData(res.data))
+      .catch(err => console.log('Wait for data...'));
   }, []);
 
   return (
